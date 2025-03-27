@@ -14,13 +14,17 @@ class Users:
         self.generate_users()
     
     def generate_users(self):
-        self.locations = np.random.rand(self.K, 3)
+        self.locations = np.random.rand(self.num_users, 3)
         self.locations[:, 0] = self.x_min + self.locations[:, 0] * (self.x_max - self.x_min)
         self.locations[:, 1] = self.y_min + self.locations[:, 1] * (self.y_max - self.y_min)
         self.locations[:, 2] = self.z_min + self.locations[:, 2] * (self.z_max - self.z_min)
 
     def set_locations(self, new_locations):
         if new_locations.shape != (self.num_users, 3):
-            raise ValueError(f"Expected new_locations with shape ({self.K}, 3), got {new_locations.shape}")
+            raise ValueError(f"Expected new_locations with shape ({self.num_users}, 3), got {new_locations.shape}")
         self.locations = new_locations
+    
+if __name__=="__main__":
+    users = Users()
+    print(users.locations)
         

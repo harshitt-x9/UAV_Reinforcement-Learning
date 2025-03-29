@@ -2,17 +2,30 @@ import numpy as np
 
 
 class UAV:
-    def __init__(self, x=50, y=50, z=50, N_r=144, N_s=7, N_t=144):
+    def __init__(self, x=50, y=50, z=50, N_r=144, N_s=7, N_t=144,
+                 P_t=30, mean_AAoA=120, sep_AAoA=10, mean_EAoA=60,
+                 sep_EAoA=10, mean_AAoD=120, sep_AAoD=10, mean_EAoD=60,
+                 sep_EAoD=10):
         self.location = np.array([[x, y, z]], dtype='float32')
         self.N_r = N_r
         self.N_s = N_s
         self.N_t = N_t
+        self.P_t = P_t
+        self.mean_AAoA = mean_AAoA
+        self.sep_AAoA = sep_AAoA
+        self.mean_EAoA = mean_EAoA
+        self.sep_EAoA = sep_EAoA
+        self.mean_AAoD = mean_AAoD
+        self.sep_AAoD = sep_AAoD
+        self.mean_EAoD = mean_EAoD
+        self.sep_EAoD = sep_EAoD
+
 
     def update_location(self, mov_x, mov_y):
         self.location[0, 0] += mov_x
         self.location[0, 1] += mov_y
 
-    def calc_f_ur(self, mean_AAoA, sep_AAoA, mean_EAoA, sep_EAoA):
+    def calc_f_ur(self):
         N_rf = 0
         ID_N_rf = np.zeros(self.N_t)
         M_Rx = np.sqrt(self.N_t)
@@ -21,22 +34,23 @@ class UAV:
         
     
         # Calculate step size for the range of angles
-        theta_step = (2 * sep_EAoA) / (sample_cluster - 1)
-        phi_step = (2 * sep_AAoA) / (sample_cluster - 1)
+        theta_step = (2 * self.sep_EAoA) / (sample_cluster - 1)
+        phi_step = (2 * self.sep_AAoA) / (sample_cluster - 1)
 
         # Generate the angular ranges for theta_r and phi_r
-        theta_range = np.arange(-sep_EAoA, sep_EAoA + theta_step, theta_step)
-        phi_range = np.arange(-sep_AAoA, sep_AAoA + phi_step, phi_step)
+        theta_range = np.arange(-self.sep_EAoA, self.sep_EAoA + theta_step, theta_step)
+        phi_range = np.arange(-self.sep_AAoA, self.sep_AAoA + phi_step, phi_step)
 
         # Calculate the final theta_r and phi_r
-        theta_r = (mean_EAoA + theta_range)[:, np.newaxis]
-        phi_r = mean_AAoA + phi_range
+        theta_r = (self.mean_EAoA + theta_range)[:, np.newaxis]
+        phi_r = self.mean_AAoA + phi_range
 
         ## Gamma
         gamma_xr = np.zeros((sample_cluster, sample_cluster), dtype='float')
         gamma_yr = np.zeros((sample_cluster, sample_cluster), dtype='float')
         gamma_xr[0: sample_cluster+1, :] = np.sin(theta_r * np.pi / 180.0) * np.cos(phi_r * np.pi / 180.0)
-        gamma_yr[0: sample_cluster+1, :] = np.sin(theta_r * np.pi / 180.0) * np.sin(phi_r * np.pi / 180.0)    
+        gamma_yr[0: sample_cluster+1, :] = np.sin(theta_r * np.pi / 180.0) * np.sin(phi_r * np.pi / 180.0)   
+
         ## lambda
         lambda_xr = -1 + (2 * np.arange(1, M_Rx + 1) - 1) / M_Rx
         lambda_yr = -1 + (2 * np.arange(1, M_Ry + 1) - 1) / M_Ry
@@ -54,6 +68,7 @@ class UAV:
                 N_rf = N_rf + 1
                 ID_N_rf[N_rf - 1] = i
         ID_N_rf = ID_N_rf[0:N_rf]
+
         # Generate TX-F-BF
         x = np.arange(0, M_Rx, dtype=int)
         y = np.arange(0, M_Ry, dtype=int)
@@ -68,11 +83,11 @@ class UAV:
         self.b_ur = U_1.conj().T
         return self.b_ur
 
-    def calc_b_ut(self, H_eff_2, P_t, noise_PSD, K, P_IWF):
-        alpha = np.power(10, (noise_PSD - 30)/10) / np.power(10, (P_t - 30)/10)
+    def calc_b_ut(self, H_eff_2, noise_PSD, K, P_IWF):
+        alpha = np.power(10, (noise_PSD - 30)/10) / np.power(10, (self.P_t - 30)/10)
         W = np.linalg.pinv((H_eff_2.conj().T @ H_eff_2) + (K * alpha * np.eye(np.size(H_eff_2, 1))))
         B = W @ H_eff_2.conj().T @ P_IWF
-        Eps = np.sqrt(np.power(10, (P_t - 30)/10) * (1 / (np.real(np.trace(B.conj().T @ self.f_ut.conj().T @ self.f_ut @ B)))))
+        Eps = np.sqrt(np.power(10, (self.P_t - 30)/10) * (1 / (np.real(np.trace(B.conj().T @ self.f_ut.conj().T @ self.f_ut @ B)))))
         B = Eps * W @ H_eff_2.conj().T @ P_IWF
         self.b_ut = B
         return self.b_ut

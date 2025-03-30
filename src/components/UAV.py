@@ -21,7 +21,7 @@ class UAV:
         self.mean_EAoD = mean_EAoD
         self.sep_EAoD = sep_EAoD
         self.Psi_g = np.array([Psi_g, Psi_g + Delta]).T
-        self.Theta = self.f_findElevation(user_range, ID_SimScenario)
+        self.Theta, _ = self.f_findElevation(user_range, ID_SimScenario)
 
 
     def update_location(self, mov_x, mov_y):

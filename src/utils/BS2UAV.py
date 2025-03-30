@@ -68,6 +68,19 @@ class BS2UAV:
         H_1 = A_R @ Z @ A_T
         ## return phase and channel
         return H_1, A_R, A_T
+    
+    def full_CSI(self):
+        [H_1, A_R, A_T] = self.generate_channel_1()
+        [U_1, S_1, V_H] = np.linalg.svd(H_1)
+        N_s = self.my_BS.N_s
+        V_1 = V_H.conj().T
+        S_val = np.diag(S_1)
+        PL = np.sum(np.square(S_1[0:N_s])) / np.sum(np.square(S_1))
+        U_1 = U_1[:, 0:N_s]
+        V_1 = V_1[:, 0:N_s]
+        S_1 = S_val[0:N_s, 0: N_s]
+        return H_1, U_1, V_1
+
 
 
 

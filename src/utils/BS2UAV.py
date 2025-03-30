@@ -114,6 +114,20 @@ class BS2UAV:
         C_HBF = np.sum(np.log2(1 + (SignalPower_1 / (NoisePower_1 + InterPower_1))))
         return C_HBF    
     
+    def f_SU_MIMO_Cap(self):
+        C_HBF = np.zeros(self.rep)
+        F_T = self.my_BS.f_b
+        F_R = self.my_UAV.f_ur
+        for i in range(self.rep):
+            # Full CSI
+            [H, U, V] = self.full_CSI()
+            # Effective CSI
+            [H_eff, U_eff, V_eff] = self.low_CSI(H, F_T, F_R)
+            # Digital Beamforming
+            C_HBF[i] = self.f_HBF_EQ(H_eff, U_eff, V_eff)
+        C_1 = (1 / 2) * np.mean(C_HBF)
+        return C_1
+    
 
 
 

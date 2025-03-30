@@ -80,6 +80,21 @@ class BS2UAV:
         V_1 = V_1[:, 0:N_s]
         S_1 = S_val[0:N_s, 0: N_s]
         return H_1, U_1, V_1
+    
+    def low_CSI(self, H_1, F_b, F_ut):
+        # H_eff_1 = F_b* @ H_1 @ F_ut
+        H_eff_1 = F_b.conj() @ H_1 @ F_ut
+        N_s = self.my_BS.N_s
+        # SVD
+        [U_eff_1, S_eff_1, VH_eff_1] = np.linalg.svd(H_eff_1)
+        V_eff_1 = VH_eff_1.conj().T
+        S_val_eff = np.diag(S_eff_1)
+        PL_eff = np.sum(S_eff_1[0:N_s] ** 2) / np.sum(S_eff_1 ** 2)
+        U_eff_1 = U_eff_1[:, 0:N_s]
+        V_eff_1 = V_eff_1[:, 0:N_s]
+        S_eff_1 = S_val_eff[0:N_s, 0: N_s]
+        return H_eff_1, U_eff_1, V_eff_1  
+    
 
 
 

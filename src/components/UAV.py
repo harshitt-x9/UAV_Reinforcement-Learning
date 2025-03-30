@@ -28,7 +28,7 @@ class UAV:
         self.location[0, 0] += mov_x
         self.location[0, 1] += mov_y
 
-    def f_findElevation(UserRange, ID_SimScenario):
+    def f_findElevation(self, UserRange, ID_SimScenario):
         # UMI
         if ID_SimScenario == 1:
             hBS = 10
@@ -166,11 +166,11 @@ class UAV:
 
         return NRF, ID
 
-    def calc_f_ut(self, Theta, Psi_g):
+    def calc_f_ut(self):
         
         M_Tx = int(np.sqrt(self.N_t))
         M_Ty = int(np.sqrt(self.N_t))
-        NRF, ID_g = self.find_NRF(M_Tx, M_Ty, Theta, Psi_g[0])
+        NRF, ID_g = self.find_NRF(M_Tx, M_Ty, self.Theta, self.Psi_g[0])
 
         ## lambda
         lambda_xt = -1 + (2 * np.arange(1, M_Tx + 1) - 1) / M_Tx

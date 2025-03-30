@@ -5,7 +5,8 @@ class UAV:
     def __init__(self, x=50, y=50, z=50, N_r=144, N_s=7, N_t=144,
                  P_t=30, mean_AAoA=120, sep_AAoA=10, mean_EAoA=60,
                  sep_EAoA=10, mean_AAoD=120, sep_AAoD=10, mean_EAoD=60,
-                 sep_EAoD=10):
+                 sep_EAoD=10, user_range=np.array([0.1, 0.9]), ID_SimScenario=1,
+                 Psi_g=np.array([15, 55, 95, 135]), Delta=15):
         self.location = np.array([[x, y, z]], dtype='float32')
         self.N_r = N_r
         self.N_s = N_s
@@ -19,11 +20,39 @@ class UAV:
         self.sep_AAoD = sep_AAoD
         self.mean_EAoD = mean_EAoD
         self.sep_EAoD = sep_EAoD
+        self.Psi_g = np.array([Psi_g, Psi_g + Delta]).T
+        self.Theta = self.f_findElevation(user_range, ID_SimScenario)
 
 
     def update_location(self, mov_x, mov_y):
         self.location[0, 0] += mov_x
         self.location[0, 1] += mov_y
+
+    def f_findElevation(UserRange, ID_SimScenario):
+        # UMI
+        if ID_SimScenario == 1:
+            hBS = 10
+            hUT_1 = [1.5, 2.5]
+            ISD = 200
+        # UMa
+        elif ID_SimScenario == 2:
+            hBS = 25
+            hUT_1 = [1.5, 2.5]
+            ISD = 500
+
+        Radius = ISD / 2
+        d2D_lim = Radius * UserRange
+        d2D_lim_1 = d2D_lim.tolist()
+        fra = 1e-3
+        d2D = (np.tile(np.linspace(d2D_lim_1[0], d2D_lim_1[1], num=1001, dtype=float), (int(1.0 / fra + 1.0), 1))).tolist()
+        d2D = np.array(d2D)
+        hUT = (np.tile(np.linspace(hUT_1[0], hUT_1[1], num=1001, dtype=float), (int(1.0 / fra + 1.0), 1))).tolist()
+        hUT = np.transpose(hUT)
+        d3D = np.sqrt(np.square(d2D) + np.square(hBS - hUT))
+        Theta_1 = [np.min(np.min(np.degrees(np.arcsin(d2D / d3D)))), np.max(np.max(np.degrees(np.arcsin(d2D / d3D))))]
+        dist_1 = [np.min(d3D.flatten()), np.max(d3D.flatten())]
+        return Theta_1, dist_1
+
 
     def calc_f_ur(self):
         N_rf = 0

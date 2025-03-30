@@ -95,6 +95,26 @@ class BS2UAV:
         S_eff_1 = S_val_eff[0:N_s, 0: N_s]
         return H_eff_1, U_eff_1, V_eff_1  
     
+    def f_HBF_EQ(self, H_eff_1, U_eff_1, V_eff_1):
+        # Transmit/Noise NoisePower_dBm
+        P_t = self.db2pow(self.my_BS.P_t - 30)
+        NoisePower_1 = self.db2pow(self.noise_PSD - 30)
+        # Number of Streams
+        N_S_1 = np.size(V_eff_1, 1)
+        # FDP/FDC
+        B_b = self.my_BS.calc_b_b(P_t, N_S_1, V_eff_1)
+        B_ur = self.my_UAV.calc_b_ur(U_eff_1)
+        # Transformed Channel
+        H_coded_1 = B_b @ H_eff_1 @ B_ur
+        # Desired Signal
+        SignalPower_1 = np.abs(np.diag(H_coded_1)) ** 2
+        # Interference Signal
+        InterPower_1 = np.sum(np.abs(H_coded_1 - np.diag(np.diag(H_coded_1))) ** 2, axis=0)
+        # Capacity with Equal PA
+        C_HBF = np.sum(np.log2(1 + (SignalPower_1 / (NoisePower_1 + InterPower_1))))
+        return C_HBF    
+    
+
 
 
 

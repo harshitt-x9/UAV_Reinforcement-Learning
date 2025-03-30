@@ -1,7 +1,7 @@
 import numpy as np
 
 class BS:
-    def __init__(self, x=0, y=0, z=10, N_s=7, N_rf_b=7, N_T=144, P_t=30,\
+    def __init__(self, x=0, y=0, z=10, N_s=5, N_rf_b=7, N_T=144, P_t=30,\
                  mean_AAoD=120, sep_AAoD=10, mean_EAoD=60, sep_EAoD=10):
         self.location = np.array([[x, y, z]], dtype='float32')
         self.N_s = N_s

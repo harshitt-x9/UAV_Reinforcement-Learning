@@ -12,6 +12,7 @@ class BS:
         self.sep_AAoD = sep_AAoD
         self.mean_EAoD = mean_EAoD
         self.sep_EAoD = sep_EAoD
+        self.calc_f_b()
 
     def calc_f_b(self):
         N_rf = 0

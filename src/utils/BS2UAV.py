@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class BS2UAV:
     def __init__(self, my_BS, my_UAV, B_W=5e8, ref_path_loss=61.34,\
@@ -81,9 +82,9 @@ class BS2UAV:
         S_1 = S_val[0:N_s, 0: N_s]
         return H_1, U_1, V_1
     
-    def low_CSI(self, H_1, F_b, F_ut):
+    def low_CSI(self, H_1, F_b, F_ur):
         # H_eff_1 = F_b* @ H_1 @ F_ut
-        H_eff_1 = F_b.conj() @ H_1 @ F_ut
+        H_eff_1 = F_ur @ H_1 @ F_b
         N_s = self.my_BS.N_s
         # SVD
         [U_eff_1, S_eff_1, VH_eff_1] = np.linalg.svd(H_eff_1)
@@ -102,10 +103,10 @@ class BS2UAV:
         # Number of Streams
         N_S_1 = np.size(V_eff_1, 1)
         # FDP/FDC
-        B_b = self.my_BS.calc_b_b(P_t, N_S_1, V_eff_1)
+        B_b = self.my_BS.calc_b_b(N_S_1, V_eff_1)
         B_ur = self.my_UAV.calc_b_ur(U_eff_1)
         # Transformed Channel
-        H_coded_1 = B_b @ H_eff_1 @ B_ur
+        H_coded_1 = B_ur @ H_eff_1 @ B_b
         # Desired Signal
         SignalPower_1 = np.abs(np.diag(H_coded_1)) ** 2
         # Interference Signal
@@ -129,7 +130,35 @@ class BS2UAV:
         return C_1
     
 
+    def plot_BS2UAV(self, n_steps=10, n_levels=10, x_min=0,
+                            x_max=100, y_min=0, y_max=100,\
+                                file_path="figs"):
+            
+            x = np.linspace(x_min, x_max, n_steps)
+            y = np.linspace(y_min, y_max, n_steps)
+            X, Y = np.meshgrid(x, y)
+            Rate = np.zeros((n_steps, n_steps))
+
+            for i in range(n_steps):
+                for j in range(n_steps):
+                    self.my_UAV.set_location(x[i], y[j])
+                    Rate[i, j] = self.f_SU_MIMO_Cap()
+
+            plt.contourf(Y, X, Rate, levels=n_levels)
+            plt.colorbar(label='Achievable Rate [bps/Hz]')
+            plt.xlabel('X')
+            plt.ylabel('Y')
+            plt.savefig("figs/BS2UAV.pdf")
+            plt.show()
 
 
+if __name__ == "__main__": 
 
+    from src.components.UAV import UAV
+    from src.components.BS import BS
 
+    my_UAV = UAV()
+    my_BS = BS()
+    my_BS2UAV = BS2UAV(my_BS, my_UAV)
+    my_BS2UAV.plot_BS2UAV()
+    

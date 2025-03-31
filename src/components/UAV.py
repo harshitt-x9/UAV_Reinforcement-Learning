@@ -30,6 +30,10 @@ class UAV:
         self.location[0, 0] += mov_x
         self.location[0, 1] += mov_y
 
+    def set_location(self, new_x, new_y):
+        self.location[0, 0] = new_x
+        self.location[0, 1] = new_y
+
     def f_findElevation(self, UserRange, ID_SimScenario):
         # UMI
         if ID_SimScenario == 1:

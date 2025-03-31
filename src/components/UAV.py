@@ -2,7 +2,7 @@ import numpy as np
 
 
 class UAV:
-    def __init__(self, x=50, y=50, z=50, N_r=144, N_s=7, N_t=144,
+    def __init__(self, x=50, y=50, z=20, N_r=144, N_s=7, N_t=144,
                  P_t=30, mean_AAoA=120, sep_AAoA=10, mean_EAoA=60,
                  sep_EAoA=10, mean_AAoD=120, sep_AAoD=10, mean_EAoD=60,
                  sep_EAoD=10, user_range=np.array([0.1, 0.9]), ID_SimScenario=1,

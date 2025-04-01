@@ -1,7 +1,7 @@
 import numpy as np
 
 class BS:
-    def __init__(self, x=0, y=0, z=10, N_s=5, N_rf_b=7, N_T=144, P_t=30,\
+    def __init__(self, x=0, y=0, z=10, N_s=6, N_rf_b=7, N_T=144, P_t=30,\
                  mean_AAoD=120, sep_AAoD=10, mean_EAoD=60, sep_EAoD=10):
         self.location = np.array([[x, y, z]], dtype='float32')
         self.N_s = N_s
@@ -68,7 +68,7 @@ class BS:
                        (y * ((lambda_yt[ID_N_rf.astype(int)]).transpose())))))
         self.f_b = F
 
-    def calc_b_b(self, K, V_1):
-        self.b_b = np.sqrt(self.P_t/K) * V_1
+    def calc_b_b(self, P_t, N_s, V_1):
+        self.b_b = np.sqrt(P_t / N_s) * V_1
         return self.b_b 
     

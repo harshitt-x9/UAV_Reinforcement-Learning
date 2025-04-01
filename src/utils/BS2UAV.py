@@ -64,7 +64,7 @@ class BS2UAV:
         PL = self.db2pow(-self.PL_dB) * np.diag((D ** (-self.path_loss))[0])
         Z = np.sqrt(1 / (2 * self.num_path)) * (np.random.randn(1, self.num_path) + 1j * np.random.randn(1, self.num_path))
         Z = np.diag(Z[0])
-        Z = np.sqrt(PL) * Z
+        Z = np.sqrt(PL) @ Z
         ## channel
         H_1 = A_R @ Z @ A_T
         ## return phase and channel
@@ -103,14 +103,14 @@ class BS2UAV:
         # Number of Streams
         N_S_1 = np.size(V_eff_1, 1)
         # FDP/FDC
-        B_b = self.my_BS.calc_b_b(N_S_1, V_eff_1)
+        B_b = self.my_BS.calc_b_b(P_t, N_S_1, V_eff_1)
         B_ur = self.my_UAV.calc_b_ur(U_eff_1)
         # Transformed Channel
         H_coded_1 = B_ur @ H_eff_1 @ B_b
         # Desired Signal
         SignalPower_1 = np.abs(np.diag(H_coded_1)) ** 2
         # Interference Signal
-        InterPower_1 = np.sum(np.abs(H_coded_1 - np.diag(np.diag(H_coded_1))) ** 2, axis=0)
+        InterPower_1 = np.sum(np.abs(H_coded_1 - np.diag(np.diag(H_coded_1))) ** 2, axis=1)
         # Capacity with Equal PA
         C_HBF = np.sum(np.log2(1 + (SignalPower_1 / (NoisePower_1 + InterPower_1))))
         return C_HBF    

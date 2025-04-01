@@ -52,8 +52,8 @@ class Agent():
             weights.append(weight * tau + targets[i]*(1-tau))
         self.target_critic.set_weights(weights)
 
-        def store_transition(self, state, action, reward, new_state, done):
-            self.memory.store_transition(state, action, reward, new_state, done)
+    def store_transition(self, state, action, reward, new_state, done):
+        self.memory.store_transition(state, action, reward, new_state, done)
 
     def save_models(self):
         print('... saving models ...')

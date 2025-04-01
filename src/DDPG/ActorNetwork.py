@@ -26,3 +26,5 @@ class ActorNetwork(keras.Model):
         prob = self.fc2(prob)
 
         mu = self.mu(prob)
+
+        return mu

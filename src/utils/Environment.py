@@ -34,7 +34,7 @@ class Environment:
             self.my_UAV2Users.my_UAV.update_location(action[0, 0], action[0, 1])
             reward_ = self.my_UAV2Users.f_calc_rate_2()
             if reward_ < self.rate_thr:
-                reward_ = -self.penalty
+                reward_ = self.penalty
             reward = reward_ 
             curr_loc_ = self.my_UAV2Users.my_UAV.location[0, 0:2].reshape(1, 2)/100
             return curr_loc_, reward, done

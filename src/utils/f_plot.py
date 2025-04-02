@@ -9,7 +9,7 @@ def f_plot(scores, file_path="figs"):
         mean = np.mean(value, axis=0)
         std = np.std(value, axis=0)
         plt.plot(mean, label=key)
-        plt.fill_between(range(num_episodes, mean-std, mean+std, alpha=0.3))
+        plt.fill_between(range(num_episodes), mean-std, mean+std, alpha=0.3)
     
     plt.legend()
     plt.xlabel("Episodes")

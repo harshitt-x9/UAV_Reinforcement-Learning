@@ -75,8 +75,8 @@ class UAV2Users():
 
         return Rate
     
-    def plot_UAV2Users(self, n_steps=10, n_levels=10, x_min=50,
-                        x_max=100, y_min=50, y_max=100, optimal_location=None,\
+    def plot_UAV2Users(self, n_steps=10, n_levels=10, x_min=48,
+                        x_max=100, y_min=48, y_max=100, optimal_location=[50, 50],\
                             file_path="figs"):
         
         x = np.linspace(x_min, x_max, n_steps)
@@ -91,11 +91,10 @@ class UAV2Users():
 
         plt.contourf(Y, X, Rate, levels=n_levels)
         plt.colorbar(label='Achievable Rate [bps/Hz]')
-        plt.scatter(my_users.locations[:, 0], my_users.locations[:, 1], color='k',
+        plt.scatter(self.my_users.locations[:, 0], self.my_users.locations[:, 1], color='k',
                     label = "Users")
-        if optimal_location:
-            plt.scatter(optimal_location[0, 0], optimal_location[0, 1], color='g',
-                        marker='D')
+        plt.scatter(optimal_location[0], optimal_location[1], color='r',
+                        marker='*')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.savefig(f"{file_path}/UAV2Users.pdf")

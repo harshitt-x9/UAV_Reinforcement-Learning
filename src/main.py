@@ -70,63 +70,65 @@ if __name__ == "__main__":
                       num_path=num_path, f_c=28, path_loss=3.6,
                       rep=100)
     
-    env = Environment(my_UAV2Users=my_UAV2Users, rate_thr=17)
+    env = Environment(my_UAV2Users=my_UAV2Users, rate_thr=18)
 
     
     n_runs = 5
-    n_games = 200
-    T = 200
+    n_games = 500
+    T = 150
     min_step = -1.0
     max_step = 1.0
+    score_dict = dict()
 
-    score_dict = {'test': np.zeros((n_runs, n_games))}
+    alphas = [0.0001, 0.001, 0.01]
+    for alpha in alphas:
+        score_dict[f"$\\alpha$={alpha}, $\\beta$={alpha * 2}"] = np.zeros((n_runs, n_games))
 
-    for run in range(n_runs):
-        agent = Agent(input_dims=(2, ), number=1)
+        for run in range(n_runs):
+            agent = Agent(input_dims=(2, ), alpha=alpha, beta=2*alpha, number=1)
 
-        temp_score = []
-        avg_score = []
-        best_score = float('-inf')
-        load_checkpoint = False
+            temp_score = []
+            avg_score = []
+            best_score = float('-inf')
+            load_checkpoint = False
 
-        if load_checkpoint:
-            n_steps = 0
-            while n_steps <= agent.batch_size:
-                observation = my_UAV.location[0, 0:2].reshape(1, 2)/100 
-                action = agent.choose_action(observation, False)
-                observation_, reward, done = env.step(action)
-                agent.store_transition(observation, action, reward, observation_, done)
-                n_steps += 1
-            agent.learn()
-            agent.load_models()
-            evaluate = True
-        else:
-            evaluate = False
+            if load_checkpoint:
+                n_steps = 0
+                while n_steps <= agent.batch_size:
+                    observation = my_UAV.location[0, 0:2].reshape(1, 2)/100 
+                    action = agent.choose_action(observation, False)
+                    observation_, reward, done = env.step(action)
+                    agent.store_transition(observation, action, reward, observation_, done)
+                    n_steps += 1
+                agent.learn()
+                agent.load_models()
+                evaluate = True
+            else:
+                evaluate = False
 
-        for i in range(n_games):
-            my_UAV.set_location(np.random.uniform(50, 100), np.random.uniform(50, 100))
-            observation = my_UAV.location[0, 0:2].reshape(1, 2)/100
-            score = 0
-            done = False
-            for s in range(T):
-                action = agent.choose_action(observation, evaluate)
-                observation_, reward, done = env.step(action)
-                score += reward
-                agent.store_transition(observation, action, reward, observation_, done)
-                if not load_checkpoint:
-                    agent.learn()
-                observation = observation_
-            score_dict['test'][run, i] = score
-            temp_score.append(score)
-            avg_score.append(np.mean(temp_score[-100:]))
-            if avg_score[-1] > best_score:
-                best_score = avg_score[-1]
-                print("best_score")
-                opt_location = my_UAV.location[0, :2]
-                if not load_checkpoint:
-                    agent.save_models()
-            print(my_UAV.location)
-            print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score[i])
+            for i in range(n_games):
+                my_UAV.set_location(np.random.uniform(50, 100), np.random.uniform(50, 100))
+                observation = my_UAV.location[0, 0:2].reshape(1, 2)/100
+                score = 0
+                done = False
+                for s in range(T):
+                    action = agent.choose_action(observation, evaluate)
+                    observation_, reward, done = env.step(action)
+                    score += reward
+                    agent.store_transition(observation, action, reward, observation_, done)
+                    if not load_checkpoint:
+                        agent.learn()
+                    observation = observation_
+                score_dict[f"$\\alpha$={alpha}, $\\beta$={alpha * 2}"][run, i] = score
+                temp_score.append(score)
+                avg_score.append(np.mean(temp_score[-100:]))
+                if avg_score[-1] > best_score:
+                    best_score = avg_score[-1]
+                    print("best_score")
+                    opt_location = my_UAV.location[0, :2]
+                    if not load_checkpoint:
+                        agent.save_models()
+                print(my_UAV.location)
+                print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score[i])
 
-my_UAV2Users.plot_UAV2Users(optimal_location=opt_location)
 f_plot(score_dict)

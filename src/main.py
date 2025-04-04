@@ -13,39 +13,7 @@ from src.DDPG.Agent import Agent
 from src.utils.f_plot import f_plot
 
 if __name__ == "__main__":
-    N_T = 144   # BS transmitt antenna
-    N_r = 144    # UAV receive antennas
-    N_t = 144    # UAV transmitt antenna
-    N_s = 6     # Data streams
-    path_loss = 3.6
-    B_W = 5e8
-    f_c = 28  #GHz
-    num_path = 10   #number of paths
-    mean_AAoA = 120 #phi_r
-    mean_AAoD = 120 #phi_t
-    mean_EAoA = 60  #theta_r
-    mean_EAoD = 60  #theta_t
-    sep_AAoA = 10 #delta_phi_r
-    sep_AAoD = 10 #delta_phi_t
-    sep_EAoA = 10  #delta_theta_r
-    sep_EAoD = 10  #delta_theta_t
-    P_t = 30    # transmitt power
-    rep = 100   # # channel realization
-
-    x_uav = 50
-    y_uav = 50
-    z_uav = 20
-    num_users = 4
-    x_min_user = 92.5
-    y_min_user = 72.5
-    z_min_user = 1.5
-    x_max_user = 97.5
-    y_max_user = 77.5
-    z_max_user = 2
-    x_bs = 0
-    y_bs = 0
-    z_bs = 10
-
+ 
     my_BS = BS(x=0, y=0, z=0, N_s=6, N_T=144,
                P_t=30, mean_AAoD=120, sep_AAoD=10,
                mean_EAoD=60, sep_EAoD=10)
@@ -67,7 +35,7 @@ if __name__ == "__main__":
                       rep=100)
     
     my_UAV2Users = UAV2Users(my_UAV=my_UAV, my_users=my_users, B_W=5e8,
-                      num_path=num_path, f_c=28, path_loss=3.6,
+                      num_path=10, f_c=28, path_loss=3.6,
                       rep=100)
     
     env = Environment(my_UAV2Users=my_UAV2Users, rate_thr=18)

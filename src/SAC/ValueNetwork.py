@@ -4,7 +4,7 @@ from keras.layers import Dense
 
 class ValueNetwork(keras.Model):
     def __init__(self, fc1_dims=256, fc2_dims=256,
-            name='value', chkpt_dir='SAC'):
+            name='value', chkpt_dir='src/models/trajectory'):
         super(ValueNetwork, self).__init__()
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims

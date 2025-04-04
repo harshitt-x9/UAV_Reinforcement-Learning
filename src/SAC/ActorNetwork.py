@@ -8,7 +8,7 @@ import tensorflow_probability as tfp
 
 class ActorNetwork(keras.Model):
     def __init__(self, max_action, fc1_dims=256, 
-            fc2_dims=256, n_actions=2, name='actor', chkpt_dir='SAC'):
+            fc2_dims=256, n_actions=2, name='actor', chkpt_dir='src/models/trajectory'):
         super(ActorNetwork, self).__init__()
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims

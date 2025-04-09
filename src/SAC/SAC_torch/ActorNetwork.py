@@ -3,7 +3,7 @@ import torch as T
 import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
-
+from torch.distributions.normal import Normal
 
 
 class ActorNetwork(nn.Module):
@@ -42,3 +42,25 @@ class ActorNetwork(nn.Module):
         sigma = T.clamp(sigma, min=self.reparam_noise, max=1)
 
         return mu, sigma
+
+    def sample_normal(self, state, reparameterize=True):
+        mu, sigma = self.forward(state)
+        probabilities = Normal(mu, sigma)
+
+        if reparameterize:
+            actions = probabilities.rsample()
+        else:
+            actions = probabilities.sample()
+
+        action = T.tanh(actions)*T.tensor(self.max_action).to(self.device)
+        log_probs = probabilities.log_prob(actions)
+        log_probs -= T.log(1-action.pow(2)+self.reparam_noise)
+        log_probs = log_probs.sum(1, keepdim=True)
+
+        return action, log_probs
+
+    def save_checkpoint(self):
+        T.save(self.state_dict(), self.checkpoint_file)
+
+    def load_checkpoint(self):
+        self.load_state_dict(T.load(self.checkpoint_file))

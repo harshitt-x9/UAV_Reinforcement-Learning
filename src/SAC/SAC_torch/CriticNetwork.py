@@ -1,5 +1,6 @@
 import os
 import torch as T
+import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 
@@ -24,3 +25,19 @@ class CriticNetwork(nn.Module):
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
 
         self.to(self.device)
+
+    def forward(self, state, action):
+        action_value = self.fc1(T.cat([state, action], dim=1))
+        action_value = F.relu(action_value)
+        action_value = self.fc2(action_value)
+        action_value = F.relu(action_value)
+
+        q = self.q(action_value)
+
+        return q
+
+    def save_checkpoint(self):
+        T.save(self.state_dict(), self.checkpoint_file)
+
+    def load_checkpoint(self):
+        self.load_state_dict(T.load(self.checkpoint_file))

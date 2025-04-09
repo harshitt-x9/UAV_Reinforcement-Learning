@@ -4,15 +4,15 @@ from keras.optimizers import Adam
 
 
 from src.DDPG.ReplayBuffer import ReplayBuffer
-from src.SAC.ActorNetwork import ActorNetwork
-from src.SAC.CriticNetwork import CriticNetwork
-from src.SAC.ValueNetwork import ValueNetwork
+from src.SAC.SAC_tf.ActorNetwork import ActorNetwork
+from src.SAC.SAC_tf.CriticNetwork import CriticNetwork
+from src.SAC.SAC_tf.ValueNetwork import ValueNetwork
 
 
 
 
 class Agent:
-    def __init__(self, alpha=0.0001, beta=0.0002, input_dims=[2],
+    def __init__(self, alpha=0.0003, beta=0.0003, input_dims=[2],
             env=None, gamma=0.99, n_actions=2, max_size=60000, tau=0.005,
             layer1_size=256, layer2_size=256, batch_size=64, reward_scale=2):
         self.gamma = gamma

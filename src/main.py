@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     
     n_runs = 3
-    n_games = 100
+    n_games = 20
     T = 150
     min_step = -1.0
     max_step = 1.0

@@ -58,7 +58,7 @@ if __name__ == "__main__":
             temp_score = []
             avg_score = []
             best_score = float('-inf')
-            load_checkpoint = False
+            load_checkpoint = True
 
             if load_checkpoint:
                 n_steps = 0

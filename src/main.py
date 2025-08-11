@@ -42,13 +42,13 @@ if __name__ == "__main__":
 
     
     n_runs = 2
-    n_games = 100
-    T = 150
+    n_games = 5
+    T = 10
     min_step = -1.0
     max_step = 1.0
     score_dict = dict()
 
-    alphas = [0.0001, 0.001, 0.01]
+    alphas = [0.0001, 0.001]
     for alpha in alphas:
         score_dict[f"$\\alpha$={alpha}, $\\beta$={alpha * 2}"] = np.zeros((n_runs, n_games))
 

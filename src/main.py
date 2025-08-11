@@ -48,7 +48,7 @@ if __name__ == "__main__":
     max_step = 1.0
     score_dict = dict()
 
-    alphas = [0.0001, 0.001]
+    alphas = [0.0001, 0.001, 0.01]
     for alpha in alphas:
         score_dict[f"$\\alpha$={alpha}, $\\beta$={alpha * 2}"] = np.zeros((n_runs, n_games))
 

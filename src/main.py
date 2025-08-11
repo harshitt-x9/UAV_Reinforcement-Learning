@@ -41,9 +41,9 @@ if __name__ == "__main__":
     env = Environment(my_UAV2Users=my_UAV2Users, rate_thr=18)
 
     
-    n_runs = 2
-    n_games = 5
-    T = 10
+    n_runs = 5
+    n_games = 100
+    T = 150
     min_step = -1.0
     max_step = 1.0
     score_dict = dict()
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             temp_score = []
             avg_score = []
             best_score = float('-inf')
-            load_checkpoint = True
+            load_checkpoint = False
 
             if load_checkpoint:
                 n_steps = 0

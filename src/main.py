@@ -41,7 +41,7 @@ if __name__ == "__main__":
     env = Environment(my_UAV2Users=my_UAV2Users, rate_thr=18)
 
     
-    n_runs = 5
+    n_runs = 3
     n_games = 100
     T = 150
     min_step = -1.0
